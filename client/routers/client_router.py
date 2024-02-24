@@ -1,6 +1,10 @@
 from typing import List
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
+from client.models.client_model import Client
+
+from shared.dependencies import get_db
 
 router = APIRouter(prefix="/client")
 
@@ -9,19 +13,23 @@ class ClienteResponse(BaseModel):
     name: str
     email: str
 
+    class Config:
+        orm_model = True
+
 class ClienteRequest(BaseModel):
     name: str
     email: str
 
 @router.get("/list", response_model=List[ClienteResponse])
-def list_clients():
-    return [
-        ClienteResponse(id=1, name="Kassio", email="kassio@mail.com"),
-        ClienteResponse(id=2, name="Joao Pedro", email="jp@mail.com"),
-        ClienteResponse(id=3, name="Gustvao", email="gustavo@mail.com"),
-        ClienteResponse(id=4, name="Eliza", email="eliza@mail.com")
-    ]
+def list_clients(db: Session = Depends(get_db)) -> List[Client]:
+    return db.query(Client).all()
 
 @router.post("/register", response_model=ClienteResponse, status_code=201)
-def register_client(client: ClienteRequest):
-    return ClienteResponse(id=5, name=client.name, email=client.email)
+def register_client(client_request: ClienteRequest, db: Session = Depends(get_db)) -> ClienteResponse:
+    new_client = Client(**client_request.dict())
+    db.add(new_client)
+    db.commit()
+    db.refresh(new_client)
+
+    # return ClienteResponse(**new_client.__dict__)
+    return new_client
