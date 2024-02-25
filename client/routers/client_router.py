@@ -3,9 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from client.models.client_model import Client
-
 from shared.dependencies import get_db
-from shared.exceptions import NotFound
+from client.routers.utils import search_client_by_id
 
 router = APIRouter(prefix="/client")
 
@@ -56,12 +55,3 @@ def delete_client(id_client: int, db: Session = Depends(get_db)) -> None:
     client: Client = search_client_by_id(id_client, db)
     db.delete(client)
     db.commit()
-
-# HELPER METHODS
-def search_client_by_id(id_client: int, db: Session) -> Client:
-    client: Client = db.query(Client).get(id_client)
-
-    if client is None:
-        raise NotFound('Client')
-    
-    return client
