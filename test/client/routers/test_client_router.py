@@ -50,4 +50,44 @@ def test_register_client():
     response = client.post('/client/register', json=new_client)
     assert response.status_code == 201
     assert response.json() == new_client_expected
+
+def test_update_client():
+    # new database for each test
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    new_client = {
+        'name': 'Magalu',
+        'email': 'magalu@mail.com'
+    }
+
+    response_post = client.post('/client/register', json=new_client)
+    id_client = response_post.json()['id']
+
+    update_client = {
+        'name': 'Magalu',
+        'email': 'newmagalu@mail.com'
+    }
+
+    response_put = client.put(f'/client/update/{id_client}', json=update_client)
+
+    assert response_put.status_code == 200
+    assert response_put.json()['email'] == update_client['email']
+
+def test_delete_client():
+    # new database for each test
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    new_client = {
+        'name': 'Magalu',
+        'email': 'magalu@mail.com'
+    }
+
+    response_post = client.post('/client/register', json=new_client)
+    id_client = response_post.json()['id']
+
+    response_delete = client.delete(f'/client/delete/{id_client}')
+
+    assert response_delete.status_code == 204
     
