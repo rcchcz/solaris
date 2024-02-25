@@ -33,3 +33,21 @@ def register_client(client_request: ClienteRequest, db: Session = Depends(get_db
 
     # return ClienteResponse(**new_client.__dict__)
     return new_client
+
+@router.put("/update/{id_client}", response_model=ClienteResponse, status_code=200)
+def update_client(id_client: int, client_request: ClienteRequest, db: Session = Depends(get_db)) -> ClienteResponse:
+    client: Client = db.query(Client).get(id_client)
+    client.name = client_request.name
+    client.email = client_request.email
+
+    db.add(client)
+    db.commit()
+    db.refresh(client)
+
+    return client
+
+@router.delete("/delete/{id_client}", status_code=204)
+def delete_client(id_client: int, db: Session = Depends(get_db)) -> None:
+    client = db.query(Client).get(id_client)
+    db.delete(client)
+    db.commit()
