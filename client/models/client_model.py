@@ -5,4 +5,4 @@ class Client(Base):
     __tablename__ = 'client'
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50))
-    email = Column(String(25))
+    email = Column(String(50))

@@ -1,6 +1,6 @@
 from typing import List
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from client.models.client_model import Client
 
@@ -17,8 +17,8 @@ class ClienteResponse(BaseModel):
         orm_model = True
 
 class ClienteRequest(BaseModel):
-    name: str
-    email: str
+    name: str = Field(min_length=3, max_length=50)
+    email: str = Field(min_length=3, max_length=50)
 
 @router.get("/list", response_model=List[ClienteResponse])
 def list_clients(db: Session = Depends(get_db)) -> List[Client]:
