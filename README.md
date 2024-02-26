@@ -1,21 +1,21 @@
 # Solaris
 (in progress)
 
-## 🚀 Usage
+## Usage
 ```
 python main.py
 ```
 If you're using Python 3, you might need to use `python3` instead of `python` in the above command.
 
-## 📖 Documentation
+## Documentation
 The Swagger UI, with interactive exploration, is available at the `/docs` URL.
 
-## 🧪 Tests
+## Tests
 ```
 python -m pytest
 ```
 
-## ✅Development guides
+## Development guides
 - [Conventional Commits Pattern](https://medium.com/linkapi-solutions/conventional-commits-pattern-3778d1a1e657)
 - [API Design Guide](https://github.com/NationalBankBelgium/REST-API-Design-Guide)
 - [HTTP Status Code Definitions](https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-p2-semantics-18#section-7)
