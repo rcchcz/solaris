@@ -5,3 +5,4 @@ __pycache__/
 /.test.db
 /alembic.ini
 alembic/
+/devnotes.txt
