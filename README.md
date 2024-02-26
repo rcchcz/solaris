@@ -14,3 +14,7 @@ The Swagger UI, with interactive exploration, is available at the `/docs` URL.
 ```
 python -m pytest
 ```
+
+## ✅Development guides
+- [Conventional Commits Pattern](https://medium.com/linkapi-solutions/conventional-commits-pattern-3778d1a1e657)
+- [API Design Guide](https://github.com/NationalBankBelgium/REST-API-Design-Guide)
