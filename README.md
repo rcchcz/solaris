@@ -1,5 +1,5 @@
 # Solaris
-(documentation in progress)
+(in progress)
 
 ## 🚀 Usage
 ```
@@ -18,3 +18,4 @@ python -m pytest
 ## ✅Development guides
 - [Conventional Commits Pattern](https://medium.com/linkapi-solutions/conventional-commits-pattern-3778d1a1e657)
 - [API Design Guide](https://github.com/NationalBankBelgium/REST-API-Design-Guide)
+- [Trunk-based development](https://www.atlassian.com/continuous-delivery/continuous-integration/trunk-based-development)
