@@ -18,4 +18,5 @@ python -m pytest
 ## ✅Development guides
 - [Conventional Commits Pattern](https://medium.com/linkapi-solutions/conventional-commits-pattern-3778d1a1e657)
 - [API Design Guide](https://github.com/NationalBankBelgium/REST-API-Design-Guide)
+- [HTTP Status Code Definitions](https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-p2-semantics-18#section-7)
 - [Trunk-based development](https://www.atlassian.com/continuous-delivery/continuous-integration/trunk-based-development)
