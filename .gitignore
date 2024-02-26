@@ -1,8 +1,12 @@
 solaris
 .vscode
 local_settings.py
-__pycache__/
 /.test.db
 /alembic.ini
 alembic/
 /devnotes.txt
+__pycache__/
+/client/routers/__pycache__/
+/client/models/__pycache__/
+/shared/__pycache__/
+/test/client/routers/__pycache__/
