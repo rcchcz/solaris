@@ -3,3 +3,5 @@ solaris
 local_settings.py
 __pycache__/
 /.test.db
+/alembic.ini
+alembic/
