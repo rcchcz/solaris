@@ -30,6 +30,13 @@ def client_by_id(id_client: int, db: Session = Depends(get_db)) -> ClienteRespon
 
 @router.post("/register", response_model=ClienteResponse, status_code=201)
 def register_client(client_request: ClienteRequest, db: Session = Depends(get_db)) -> ClienteResponse:
+    # CHECK IF THE EMAIL IS AREADY IN USE
+    # TODO: refactor this check to use some sqlalchemy notation
+    # TODO: move this to exceptions_handler section
+    db_client = db.query(Client).filter(Client.email == client_request.email).first()
+    if db_client:
+        raise HTTPException(status_code=409, detail="Email already registered.")
+
     new_client = Client(**client_request.dict())
     db.add(new_client)
     db.commit()
