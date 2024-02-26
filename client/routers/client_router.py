@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from client.models.client_model import Client
@@ -20,9 +20,16 @@ class ClienteRequest(BaseModel):
     name: str = Field(min_length=3, max_length=50)
     email: str = Field(min_length=3, max_length=50)
 
+# @router.get("/list", response_model=List[ClienteResponse])
+# def list_clients(db: Session = Depends(get_db)) -> List[Client]:
+#     return db.query(Client).order_by(Client.created_at).all()
+
+# TODO: refactor this to use fastapi_pagination
 @router.get("/list", response_model=List[ClienteResponse])
-def list_clients(db: Session = Depends(get_db)) -> List[Client]:
-    return db.query(Client).order_by(Client.created_at).all()
+def list_clients(page: int = Query(1, gt=0), db: Session = Depends(get_db)) -> List[Client]:
+    limit_per_page = 20
+    offset = (page - 1) * limit_per_page
+    return db.query(Client).order_by(Client.created_at).offset(offset).limit(limit_per_page).all()
 
 @router.get("/{id_client}", response_model=ClienteResponse)
 def client_by_id(id_client: int, db: Session = Depends(get_db)) -> ClienteResponse:
