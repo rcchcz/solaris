@@ -8,4 +8,4 @@ def search_client_by_id(id_client: int, db: Session) -> Client:
     if client is None:
         raise NotFound('Client')
     
-    return client
+    return client        

@@ -22,7 +22,7 @@ class ClienteRequest(BaseModel):
 
 @router.get("/list", response_model=List[ClienteResponse])
 def list_clients(db: Session = Depends(get_db)) -> List[Client]:
-    return db.query(Client).all()
+    return db.query(Client).order_by(Client.created_at).all()
 
 @router.get("/{id_client}", response_model=ClienteResponse)
 def client_by_id(id_client: int, db: Session = Depends(get_db)) -> ClienteResponse:
