@@ -34,9 +34,9 @@ class ProductRequest(BaseModel):
 @router.get("/list", response_model=List[ProductResponse])
 def list_products(page: int = Query(1, gt=0), page_size: int = Query(10, gt=0), db: Session = Depends(get_db)) -> List[Product]:
     total_items = db.query(func.count(Product.id)).scalar()
-    total_pages = (total_items + page_size - 1)
+    total_pages = (total_items + page_size - 1) // page_size
+    # TODO: move this to exceptions_handler section
     if page > total_pages:
-        # TODO: move this to exceptions_handler section
         raise HTTPException(status_code=404, detail="Page not found.")
     skip = (page - 1) * page_size
     products = db.query(Product).offset(skip).limit(page_size).all()
