@@ -31,6 +31,7 @@ class ProductRequest(BaseModel):
 # def list_products(db: Session = Depends(get_db)) -> List[Product]:
 #     return db.query(Product).all()
 
+# TODO: refactor this to use fastapi_pagination
 @router.get("/list", response_model=List[ProductResponse])
 def list_products(page: int = Query(1, gt=0), page_size: int = Query(10, gt=0), db: Session = Depends(get_db)) -> List[Product]:
     total_items = db.query(func.count(Product.id)).scalar()
