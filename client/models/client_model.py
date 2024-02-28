@@ -3,14 +3,19 @@ from client.models.product_model import Product
 from shared.database import Base
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship, Mapped
+from sqlalchemy.orm import relationship
 
 # Association Client-Product
-client_product = Table(
-    "client_product",
-    Base.metadata,
-    Column("client", ForeignKey("client.id"), primary_key=True),
-    Column("product", ForeignKey("product.id"), primary_key=True),
+# client_product = Table(
+#     "client_product",
+#     Base.metadata,
+#     Column("client_id", Integer, ForeignKey("client.id"), primary_key=True),
+#     Column("product_id", Integer, ForeignKey("product.id"), primary_key=True),
+# )
+
+client_product = Table('client_product', Base.metadata,
+    Column('client_id', ForeignKey('client.id'), primary_key=True),
+    Column('product_id', ForeignKey('product.id'), primary_key=True)
 )
 
 class Client(Base):
@@ -19,4 +24,4 @@ class Client(Base):
     name = Column(String(50), nullable=False)
     email = Column(String(50), nullable=False)
     created_at = Column(DateTime, default=func.now())
-    fav_products: Mapped[Set[Product]] = relationship(secondary=client_product)
+    favorite_products = relationship('Product', secondary='client_product', back_populates='clients')

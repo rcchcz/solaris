@@ -1,8 +1,9 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from client.models.client_model import Client
+from client.routers.product_router import ProductResponse
 from shared.dependencies import get_db
 from client.routers.utils import search_client_by_id
 
@@ -20,6 +21,12 @@ class ClienteRequest(BaseModel):
     name: str = Field(min_length=3, max_length=50)
     email: str = Field(min_length=3, max_length=50)
 
+class ClientSchema(ClienteResponse):
+    favorite_products: List[ProductResponse]
+
+class ProductSchema(ProductResponse):
+    clients: List[ClienteResponse]
+
 # @router.get("/list", response_model=List[ClienteResponse])
 # def list_clients(db: Session = Depends(get_db)) -> List[Client]:
 #     return db.query(Client).order_by(Client.created_at).all()
@@ -31,9 +38,15 @@ def list_clients(page: int = Query(1, gt=0), db: Session = Depends(get_db)) -> L
     offset = (page - 1) * limit_per_page
     return db.query(Client).order_by(Client.created_at).offset(offset).limit(limit_per_page).all()
 
-@router.get("/{id_client}", response_model=ClienteResponse)
-def client_by_id(id_client: int, db: Session = Depends(get_db)) -> ClienteResponse:
-    return search_client_by_id(id_client, db)
+# @router.get("/{id_client}", response_model=ClienteResponse)
+# def client_by_id(id_client: int, db: Session = Depends(get_db)) -> ClienteResponse:
+#     return search_client_by_id(id_client, db)
+
+@router.get("/{id_client}", response_model=ClientSchema)
+def client_by_id(id_client: int, db: Session = Depends(get_db)):
+    client = db.query(Client).options(joinedload(Client.favorite_products)).\
+            where(Client.id == id_client).one()
+    return client
 
 @router.post("/register", response_model=ClienteResponse, status_code=201)
 def register_client(client_request: ClienteRequest, db: Session = Depends(get_db)) -> ClienteResponse:
