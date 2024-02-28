@@ -38,7 +38,7 @@ def list_products(page: int = Query(1, gt=0), page_size: int = Query(10, gt=0), 
     total_pages = (total_items + page_size - 1) // page_size
     # TODO: move this to exceptions_handler section
     if page > total_pages:
-        raise HTTPException(status_code=404, detail="Page not found.")
+        raise NotFound('Page')
     skip = (page - 1) * page_size
     products = db.query(Product).offset(skip).limit(page_size).all()
     return products

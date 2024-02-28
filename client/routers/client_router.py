@@ -46,6 +46,7 @@ def list_clients(page: int = Query(1, gt=0), db: Session = Depends(get_db)) -> L
 def client_by_id(id_client: int, db: Session = Depends(get_db)):
     client = db.query(Client).options(joinedload(Client.favorite_products)).\
             where(Client.id == id_client).one()
+    
     return client
 
 @router.post("/register", response_model=ClientResponse, status_code=201)
