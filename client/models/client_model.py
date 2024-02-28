@@ -1,5 +1,3 @@
-from typing import Set
-from client.models.product_model import Product
 from shared.database import Base
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table
 from sqlalchemy.sql import func

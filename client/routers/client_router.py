@@ -9,7 +9,7 @@ from client.routers.utils import search_client_by_id
 
 router = APIRouter(prefix="/client")
 
-class ClienteResponse(BaseModel):
+class ClientResponse(BaseModel):
     id: int
     name: str
     email: str
@@ -17,29 +17,29 @@ class ClienteResponse(BaseModel):
     class Config:
         orm_model = True
 
-class ClienteRequest(BaseModel):
+class ClientRequest(BaseModel):
     name: str = Field(min_length=3, max_length=50)
     email: str = Field(min_length=3, max_length=50)
 
-class ClientSchema(ClienteResponse):
+class ClientSchema(ClientResponse):
     favorite_products: List[ProductResponse]
 
 class ProductSchema(ProductResponse):
-    clients: List[ClienteResponse]
+    clients: List[ClientResponse]
 
-# @router.get("/list", response_model=List[ClienteResponse])
+# @router.get("/list", response_model=List[ClientResponse])
 # def list_clients(db: Session = Depends(get_db)) -> List[Client]:
 #     return db.query(Client).order_by(Client.created_at).all()
 
 # TODO: refactor this to use fastapi_pagination
-@router.get("/list", response_model=List[ClienteResponse])
+@router.get("/list", response_model=List[ClientResponse])
 def list_clients(page: int = Query(1, gt=0), db: Session = Depends(get_db)) -> List[Client]:
     limit_per_page = 20
     offset = (page - 1) * limit_per_page
     return db.query(Client).order_by(Client.created_at).offset(offset).limit(limit_per_page).all()
 
-# @router.get("/{id_client}", response_model=ClienteResponse)
-# def client_by_id(id_client: int, db: Session = Depends(get_db)) -> ClienteResponse:
+# @router.get("/{id_client}", response_model=ClientResponse)
+# def client_by_id(id_client: int, db: Session = Depends(get_db)) -> ClientResponse:
 #     return search_client_by_id(id_client, db)
 
 @router.get("/{id_client}", response_model=ClientSchema)
@@ -48,8 +48,8 @@ def client_by_id(id_client: int, db: Session = Depends(get_db)):
             where(Client.id == id_client).one()
     return client
 
-@router.post("/register", response_model=ClienteResponse, status_code=201)
-def register_client(client_request: ClienteRequest, db: Session = Depends(get_db)) -> ClienteResponse:
+@router.post("/register", response_model=ClientResponse, status_code=201)
+def register_client(client_request: ClientRequest, db: Session = Depends(get_db)) -> ClientResponse:
     # CHECK IF THE EMAIL IS AREADY IN USE
     # TODO: refactor this check to use some sqlalchemy notation
     # TODO: move this to exceptions_handler section
@@ -62,11 +62,11 @@ def register_client(client_request: ClienteRequest, db: Session = Depends(get_db
     db.commit()
     db.refresh(new_client)
 
-    # return ClienteResponse(**new_client.__dict__)
+    # return ClientResponse(**new_client.__dict__)
     return new_client
 
-@router.put("/update/{id_client}", response_model=ClienteResponse, status_code=200)
-def update_client(id_client: int, client_request: ClienteRequest, db: Session = Depends(get_db)) -> ClienteResponse:
+@router.put("/update/{id_client}", response_model=ClientResponse, status_code=200)
+def update_client(id_client: int, client_request: ClientRequest, db: Session = Depends(get_db)) -> ClientResponse:
     client: Client = search_client_by_id(id_client, db)
     client.name = client_request.name
     client.email = client_request.email
