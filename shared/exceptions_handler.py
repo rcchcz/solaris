@@ -3,4 +3,4 @@ from fastapi.responses import JSONResponse
 from shared.exceptions import NotFound
 
 async def not_found_exception_handler(request: Request, exc: NotFound):
-    return JSONResponse(status_code=404, content={'message': f'{exc.name} not found.'})
+    return JSONResponse(status_code=404, content={'detail': f'{exc.name} not found.'})

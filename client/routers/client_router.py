@@ -6,6 +6,7 @@ from client.models.client_model import Client
 from client.routers.product_router import ProductResponse
 from shared.dependencies import get_db
 from client.routers.utils import search_client_by_id
+from shared.exceptions import NotFound
 
 router = APIRouter(prefix="/client")
 
@@ -44,8 +45,13 @@ def list_clients(page: int = Query(1, gt=0), db: Session = Depends(get_db)) -> L
 
 @router.get("/{id_client}", response_model=ClientSchema)
 def client_by_id(id_client: int, db: Session = Depends(get_db)):
+    # client = db.query(Client).options(joinedload(Client.favorite_products)).\
+    #         where(Client.id == id_client).one()
     client = db.query(Client).options(joinedload(Client.favorite_products)).\
-            where(Client.id == id_client).one()
+             where(Client.id == id_client).one_or_none()
+    
+    if client is None:
+        raise NotFound('Client')
     
     return client
 
