@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Numeric
 from shared.database import Base
+from sqlalchemy.orm import relationship
 
 class Product(Base):
     __tablename__ = 'product'
