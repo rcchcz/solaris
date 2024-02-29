@@ -83,6 +83,7 @@ def update_client(id_client: int, client_request: ClientSchemaRequest, db: Sessi
     client.name = client_request.name
     client.email = client_request.email
 
+    # TODO: update to assign a new list instead of append (this will handle product removal cases)
     for product_id in client_request.favorite_products:
         db_product = db.query(Product).filter_by(id=product_id).one_or_none()
         if db_product and db_product not in client.favorite_products:
