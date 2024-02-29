@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session, joinedload
 from client.models.client_model import Client
+from client.models.product_model import Product
 from client.routers.product_router import ProductResponse
 from shared.dependencies import get_db
 from client.routers.utils import search_client_by_id
@@ -24,6 +25,9 @@ class ClientRequest(BaseModel):
 
 class ClientSchema(ClientResponse):
     favorite_products: List[ProductResponse]
+
+class ClientSchemaRequest(ClientRequest):
+    favorite_products: List[int]
 
 class ProductSchema(ProductResponse):
     clients: List[ClientResponse]
@@ -72,11 +76,17 @@ def register_client(client_request: ClientRequest, db: Session = Depends(get_db)
     # return ClientResponse(**new_client.__dict__)
     return new_client
 
-@router.put("/update/{id_client}", response_model=ClientResponse, status_code=200)
-def update_client(id_client: int, client_request: ClientRequest, db: Session = Depends(get_db)) -> ClientResponse:
-    client: Client = search_client_by_id(id_client, db)
+@router.put("/update/{id_client}", response_model=ClientSchema, status_code=200)
+def update_client(id_client: int, client_request: ClientSchemaRequest, db: Session = Depends(get_db)) -> ClientResponse:
+    client: ClientSchema = db.query(Client).options(joinedload(Client.favorite_products)).\
+             where(Client.id == id_client).one_or_none()
     client.name = client_request.name
     client.email = client_request.email
+
+    for product_id in client_request.favorite_products:
+        db_product = db.query(Product).filter_by(id=product_id).one_or_none()
+        if db_product and db_product not in client.favorite_products:
+            client.favorite_products.append(db_product)
 
     db.add(client)
     db.commit()
