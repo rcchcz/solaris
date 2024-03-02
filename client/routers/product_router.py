@@ -51,3 +51,22 @@ def product_by_id(id_product: int, db: Session = Depends(get_db)) -> ProductResp
         raise NotFound('Product')
     
     return product
+
+@router.delete("/delete/{id_product}", status_code=204)
+def delete_product(id_product: int, db: Session = Depends(get_db)) -> None:
+    product: Product = db.query(Product).get(id_product)
+
+    if product is None:
+        raise NotFound('Product')
+    
+    db.delete(product)
+    db.commit()
+
+@router.post("/register", response_model=ProductResponse, status_code=201)
+def register_product(product_request: ProductRequest, db: Session = Depends(get_db)):
+    new_product = Product(**product_request.dict())
+    db.add(new_product)
+    db.commit()
+    db.refresh(new_product)
+
+    return new_product
