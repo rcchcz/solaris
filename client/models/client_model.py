@@ -4,13 +4,6 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
 # Association Client-Product
-# client_product = Table(
-#     "client_product",
-#     Base.metadata,
-#     Column("client_id", Integer, ForeignKey("client.id"), primary_key=True),
-#     Column("product_id", Integer, ForeignKey("product.id"), primary_key=True),
-# )
-
 client_product = Table('client_product', Base.metadata,
     Column('client_id', ForeignKey('client.id'), primary_key=True),
     Column('product_id', ForeignKey('product.id'), primary_key=True)
