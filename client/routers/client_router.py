@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session, joinedload
-from client.models.client_model import Client, client_product
+from client.models.client_model import Client
 from client.models.product_model import Product
 from client.routers.product_router import ProductResponse
 from shared.dependencies import get_db
