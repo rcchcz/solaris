@@ -90,6 +90,52 @@ def test_notfound_client_by_id():
         assert e.status_code == 404    
         assert e.detail == {'detail': 'Client not found.'}
 
+def test_successful_client_by_id_with_favorite_products():
+    product = { "price": 5000,
+                "image": "img001.jpg",
+                "brand": "Brand 1",
+                "title": "Title 1",
+                "review_score": 4.75
+                }
+    
+    product_response = client.post('/product/register', json=product)
+    product_id = product_response.json()['id']
+
+    new_client = {
+        'name': 'Magalu',
+        'email': 'magalu@mail.com'
+    }
+
+    response = client.post('/client/register', json=new_client)
+    assert response.status_code == 201
+    
+    client_id = response.json()['id']
+    client_details = {
+        'name': 'Magalu',
+        'email': 'magalu@mail.com',
+        'favorite_products': [product_id]
+    }
+
+    response = client.put(f'/client/update/{client_id}', json=client_details)
+    assert response.status_code == 200
+
+    client_expected = {
+        'id': client_id,
+        'name': 'Magalu',
+        'email': 'magalu@mail.com',
+        'favorite_products': [{ "id": product_id,
+                                "price": 5000,
+                                "image": "img001.jpg",
+                                "brand": "Brand 1",
+                                "title": "Title 1",
+                                "review_score": 4.75
+                            }]
+    }
+
+    response = client.get(f'/client/{client_id}')
+    assert response.status_code == 200    
+    assert response.json() == client_expected
+
 def test_successful_client_update():
     # new database for each test
     Base.metadata.drop_all(bind=engine)
