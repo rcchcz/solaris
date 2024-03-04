@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session, joinedload
-from client.models.client_model import Client
+from client.models.client_model import Client, client_product
 from client.models.product_model import Product
 from client.routers.product_router import ProductResponse
 from shared.dependencies import get_db
@@ -37,11 +37,11 @@ class ProductSchema(ProductResponse):
 #     return db.query(Client).order_by(Client.created_at).all()
 
 # TODO: refactor this to use fastapi_pagination
-@router.get("/list", response_model=List[ClientResponse])
-def list_clients(page: int = Query(1, gt=0), db: Session = Depends(get_db)) -> List[Client]:
+@router.get("/list", response_model=List[ClientSchema])
+def list_clients(page: int = Query(1, gt=0), db: Session = Depends(get_db)) -> List[ClientSchema]:
     limit_per_page = 20
     offset = (page - 1) * limit_per_page
-    return db.query(Client).order_by(Client.created_at).offset(offset).limit(limit_per_page).all()
+    return db.query(Client).options(joinedload(Client.favorite_products)).order_by(Client.created_at).offset(offset).limit(limit_per_page).all()
 
 # @router.get("/{id_client}", response_model=ClientResponse)
 # def client_by_id(id_client: int, db: Session = Depends(get_db)) -> ClientResponse:
