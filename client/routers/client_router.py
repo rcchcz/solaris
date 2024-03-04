@@ -80,6 +80,13 @@ def register_client(client_request: ClientRequest, db: Session = Depends(get_db)
 def update_client(id_client: int, client_request: ClientSchemaRequest, db: Session = Depends(get_db)) -> ClientResponse:
     client: ClientSchema = db.query(Client).options(joinedload(Client.favorite_products)).\
              where(Client.id == id_client).one_or_none()
+    
+    if client is None:
+        raise NotFound('Client')
+    
+    if db.query(Client).filter(Client.email == client_request.email, Client.id != client.id).first():
+        raise HTTPException(status_code=409, detail="Email already in use.")
+
     client.name = client_request.name
     client.email = client_request.email
 
