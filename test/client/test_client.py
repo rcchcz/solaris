@@ -182,15 +182,36 @@ def test_notfound_client_delete():
         assert e.status_code == 404
         assert e.detail == 'Client not found.'
 
-# def test_list_clients():
-#     # new database for each test
-#     Base.metadata.drop_all(bind=engine)
-#     Base.metadata.create_all(bind=engine)
+def test_list_clients():
+    # new database for each test
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
 
-#     client.post('/client/register', json={'name': 'Kassio', 'email': 'kassio@mail.com'})
-#     client.post('/client/register', json={'name': 'Joao Pedro', 'email': 'jp@mail.com'})
+    response = client.post('/client/register', json={'name': 'Kassio', 'email': 'kassio@mail.com', 'favorite_products': []})
+    assert response.status_code == 201
     
-#     response = client.get('/client/list')
-#     assert response.status_code == 200
-#     #assert response.json() == [{'id': 1, 'name': 'Kassio', 'email': 'kassio@mail.com'}, {'id': 2, 'name': 'Joao Pedro', 'email': 'jp@mail.com'}, {'id': 3, 'name': 'Gustvao', 'email': 'gustavo@mail.com'}, {'id': 4, 'name': 'Eliza', 'email': 'eliza@mail.com'}]
-#     assert response.json() == [{'id': 1, 'name': 'Kassio', 'email': 'kassio@mail.com'}, {'id': 2, 'name': 'Joao Pedro', 'email': 'jp@mail.com'}]
+    response = client.post('/client/register', json={'name': 'Joao Pedro', 'email': 'jp@mail.com', 'favorite_products': []})
+    assert response.status_code == 201
+
+    response = client.post('/client/register', json={'name': 'Gustavo', 'email': 'gustavo@mail.com', 'favorite_products': []})
+    assert response.status_code == 201
+
+    response = client.post('/client/register', json={'name': 'Eliza', 'email': 'eliza@mail.com', 'favorite_products': []})
+    assert response.status_code == 201
+    
+    response = client.get('/client/list')
+    assert response.status_code == 200
+    assert response.json() == [{'id': 1, 'name': 'Kassio', 'email': 'kassio@mail.com', 'favorite_products': []},
+                               {'id': 2, 'name': 'Joao Pedro', 'email': 'jp@mail.com', 'favorite_products': []},
+                               {'id': 3,'name': 'Gustavo', 'email': 'gustavo@mail.com', 'favorite_products': []},
+                               {'id': 4, 'name': 'Eliza', 'email': 'eliza@mail.com', 'favorite_products': []}]
+
+def test_empty_list_clients():
+    # new database for each test
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    response = client.get('/client/list')
+
+    assert response.status_code == 200
+    assert response.json() == []
