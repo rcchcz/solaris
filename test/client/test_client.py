@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 from main import app
 from shared.database import Base
 from shared.dependencies import get_db
+from shared.exceptions import NotFound
 
 client = TestClient(app)
 
@@ -56,6 +57,38 @@ def test_duplicate_client_registration():
     except HTTPException as e:
         assert e.status_code == 409
         assert e.detail == {'detail': 'Email already registered.'}
+
+def test_successful_client_by_id():
+    # new database for each test
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    new_client = {
+        'name': 'Magalu',
+        'email': 'magalu@mail.com'
+    }
+
+    response = client.post('/client/register', json=new_client)
+    assert response.status_code == 201
+
+    client_expected = new_client.copy()
+    client_expected['id'] = 1
+    client_expected['favorite_products'] = []
+
+    response = client.get('/client/1')
+    assert response.status_code == 200    
+    assert response.json() == client_expected
+
+def test_notfound_client_by_id():
+    # new database for each test
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    try:
+        response = client.get('/client/1')
+    except NotFound as e:
+        assert e.status_code == 404    
+        assert e.detail == {'detail': 'Client not found.'}
 
 # def test_list_clients():
 #     # new database for each test
