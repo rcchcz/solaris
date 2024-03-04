@@ -39,7 +39,7 @@ def test_successful_client_registration():
     assert response.status_code == 201
     assert response.json() == new_client_expected
 
-def test_duplicate_client_registration():
+def test_duplicate_email_client_registration():
     # new database for each test
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
@@ -119,7 +119,7 @@ def test_successful_client_update():
     assert response_put.json()['name'] == update_client_expected['name']
     assert response_put.json()['email'] == update_client_expected['email']
 
-def test_fail_client_update():
+def test_duplicate_email_client_update():
     # new database for each test
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
