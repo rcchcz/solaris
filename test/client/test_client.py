@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
+import pytest
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from main import app
@@ -22,11 +23,13 @@ def override_get_db():
 
 app.dependency_overrides[get_db] = override_get_db
 
-def test_successful_client_registration():
+@pytest.fixture(autouse=True)
+def setup_database():
     # new database for each test
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
 
+def test_successful_client_registration():
     new_client = {
         'name': 'Magalu',
         'email': 'magalu@mail.com'
@@ -40,10 +43,6 @@ def test_successful_client_registration():
     assert response.json() == new_client_expected
 
 def test_duplicate_email_client_registration():
-    # new database for each test
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
-
     new_client = {
         'name': 'Magalu',
         'email': 'magalu@mail.com'
@@ -59,10 +58,6 @@ def test_duplicate_email_client_registration():
         assert e.detail == {'detail': 'Email already registered.'}
 
 def test_successful_client_by_id():
-    # new database for each test
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
-
     new_client = {
         'name': 'Magalu',
         'email': 'magalu@mail.com'
@@ -80,10 +75,6 @@ def test_successful_client_by_id():
     assert response.json() == client_expected
 
 def test_notfound_client_by_id():
-    # new database for each test
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
-
     try:
         response = client.get('/client/1')
     except NotFound as e:
@@ -137,10 +128,6 @@ def test_successful_client_by_id_with_favorite_products():
     assert response.json() == client_expected
 
 def test_successful_client_update():
-    # new database for each test
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
-
     new_client = {
         'name': 'Magalu',
         'email': 'magalu@mail.com'
@@ -166,10 +153,6 @@ def test_successful_client_update():
     assert response_put.json()['email'] == update_client_expected['email']
 
 def test_duplicate_email_client_update():
-    # new database for each test
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
-
     new_client1 = {
         'name': 'Magalu',
         'email': 'magalu@mail.com'
@@ -201,10 +184,6 @@ def test_duplicate_email_client_update():
         assert e.detail == 'Email already in use.'
 
 def test_successful_client_delete():
-    # new database for each test
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
-
     new_client = {
         'name': 'Magalu',
         'email': 'magalu@mail.com'
@@ -218,10 +197,6 @@ def test_successful_client_delete():
     assert response_delete.status_code == 204
 
 def test_notfound_client_delete():
-    # new database for each test
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
-
     try:
         client.delete('/client/delete/1')
     except NotFound as e:
@@ -229,10 +204,6 @@ def test_notfound_client_delete():
         assert e.detail == 'Client not found.'
 
 def test_list_clients():
-    # new database for each test
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
-
     response = client.post('/client/register', json={'name': 'Kassio', 'email': 'kassio@mail.com', 'favorite_products': []})
     assert response.status_code == 201
     
@@ -253,10 +224,6 @@ def test_list_clients():
                                {'id': 4, 'name': 'Eliza', 'email': 'eliza@mail.com', 'favorite_products': []}]
 
 def test_empty_list_clients():
-    # new database for each test
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
-
     response = client.get('/client/list')
 
     assert response.status_code == 200
